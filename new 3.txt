@@ -1,0 +1,662 @@
+
+
+
+
+--1 DIM_CHARGE_CATEG_SQL
+CREATE TABLE DIM_CHARGE_CATEG_SQL_IN1542(
+Charge_categ_Key	int	   identity(1,1) primary key         ,       
+CHARGE_CATEG_ID	int	              NOT NULL  ,         
+TENANT_ORG_ID	int               NOT NULL  ,       
+CHARGE_CATEG	varchar(50)	      NOT NULL  ,       
+CHARGE_CATEG_DESC	varchar(50)	  NOT NULL  ,       
+TAX_IND	int	                      NOT NULL,       
+VERSION INT
+        ) ;	
+		
+SELECT * FROM DIM_CHARGE_CATEG_SQL_IN1542
+ INSERT INTO DIM_CHARGE_CATEG_SQL_IN1542(
+ CHARGE_CATEG_ID,TENANT_ORG_ID,CHARGE_CATEG,CHARGE_CATEG_DESC,TAX_IND,VERSION)
+
+ SELECT 
+ DISTINCT
+ ISNULL(CONVERT(INT,LTRIM(RTRIM(CHARGE_CATEG_ID))),101) AS CHARGE_CATEG_ID ,
+ ISNULL(CONVERT(INT,LTRIM(RTRIM(TENANT_ORG_ID))),101)
+AS TENANT_ORG_ID,
+CASE
+when LEN(LTRIM(RTRIM(CHARGE_CATEG)))> 5 then LTRIM(RTRIM(CHARGE_CATEG))
+else upper(ltrim(rtrim(charge_categ))) END AS CHARGE_CATEG,
+ ltrim(rtrim(charge_categ_desc))  AS CHARGE_CATEG_DESC,
+ISNULL(CONVERT(INT,TAX_IND),101) ,1 AS VERSION
+FROM [BCMPWMT].[CHARGE_CATEG_LKP]
+
+
+SELECT * FROM DIM_CHARGE_CATEG_SQL_IN1542
+
+--TESTING----
+----row count-------------
+select count(*) from DIM_CHARGE_CATEG_SQL_IN1542 ---42
+
+select 
+	count(*)
+from 
+	(SELECT 
+		ISNULL(CONVERT(INT,LTRIM(RTRIM(CHARGE_CATEG_ID))),101) AS CHARGE_CATEG_ID ,
+		ISNULL(CONVERT(INT,LTRIM(RTRIM(TENANT_ORG_ID))),101) AS TENANT_ORG_ID,
+		CASE
+			when LEN(LTRIM(RTRIM(CHARGE_CATEG)))> 5 then LTRIM(RTRIM(CHARGE_CATEG))
+			else upper(ltrim(rtrim(charge_categ)))
+			END AS CHARGE_CATEG,
+		ltrim(rtrim(charge_categ_desc))  AS CHARGE_CATEG_DESC,
+		ISNULL(CONVERT(INT,TAX_IND),101) as tax,
+		1 AS VERSION
+	FROM [BCMPWMT].[CHARGE_CATEG_LKP])kkk
+
+
+
+
+
+
+
+
+
+
+
+
+
+--42
+---row count group by ---------------------42
+select CHARGE_CATEG_ID	,count(*) from DIM_CHARGE_CATEG_SQL_in1542 group by CHARGE_CATEG_ID	
+select CHARGE_CATEG_ID	,count(*) 
+from 
+	(SELECT 
+		ISNULL(CONVERT(INT,LTRIM(RTRIM(CHARGE_CATEG_ID))),101) AS CHARGE_CATEG_ID ,
+		ISNULL(CONVERT(INT,LTRIM(RTRIM(TENANT_ORG_ID))),101) AS TENANT_ORG_ID,
+		CASE
+			when LEN(LTRIM(RTRIM(CHARGE_CATEG)))> 5 then LTRIM(RTRIM(CHARGE_CATEG))
+			else upper(ltrim(rtrim(charge_categ)))
+			END AS CHARGE_CATEG,
+		ltrim(rtrim(charge_categ_desc))  AS CHARGE_CATEG_DESC,
+		ISNULL(CONVERT(INT,TAX_IND),101) as tax,
+		1 AS VERSION
+	FROM [BCMPWMT].[CHARGE_CATEG_LKP])kkk
+
+
+
+
+group by CHARGE_CATEG_ID
+
+
+---------------------------------------
+
+---------------random record check---- 
+select * from DIM_CHARGE_CATEG_SQL where charge_categ='vas'
+select * from 
+
+	(SELECT 
+		ISNULL(CONVERT(INT,LTRIM(RTRIM(CHARGE_CATEG_ID))),101) AS CHARGE_CATEG_ID ,
+		ISNULL(CONVERT(INT,LTRIM(RTRIM(TENANT_ORG_ID))),101) AS TENANT_ORG_ID,
+		CASE
+			when LEN(LTRIM(RTRIM(CHARGE_CATEG)))> 5 then LTRIM(RTRIM(CHARGE_CATEG))
+			else upper(ltrim(rtrim(charge_categ)))
+			END AS CHARGE_CATEG,
+		ltrim(rtrim(charge_categ_desc))  AS CHARGE_CATEG_DESC,
+		ISNULL(CONVERT(INT,TAX_IND),101) as tax,
+		1 AS VERSION
+	FROM [BCMPWMT].[CHARGE_CATEG_LKP])kkk
+
+
+
+
+
+where charge_categ='vas'
+
+-------------duplicate check---------------- 0
+select CHARGE_CATEG_ID,count(*) 
+
+from DIM_CHARGE_CATEG_SQL
+group by CHARGE_CATEG_ID
+having count(*)>1
+-------------column level check----------------
+select count(*)
+from
+DIM_CHARGE_CATEG_SQL  t left join 
+
+	(SELECT 
+		ISNULL(CONVERT(INT,LTRIM(RTRIM(CHARGE_CATEG_ID))),101) AS CHARGE_CATEG_ID ,
+		ISNULL(CONVERT(INT,LTRIM(RTRIM(TENANT_ORG_ID))),101) AS TENANT_ORG_ID,
+		CASE
+			when LEN(LTRIM(RTRIM(CHARGE_CATEG)))> 5 then LTRIM(RTRIM(CHARGE_CATEG))
+			else upper(ltrim(rtrim(charge_categ)))
+			END AS CHARGE_CATEG,
+		ltrim(rtrim(charge_categ_desc))  AS CHARGE_CATEG_DESC,
+		ISNULL(CONVERT(INT,TAX_IND),101) as tax,
+		1 AS VERSION
+	FROM [BCMPWMT].[CHARGE_CATEG_LKP])s
+on t.CHARGE_CATEG_ID=s.charge_categ_id
+where s.charge_categ_id is null and(
+
+s.CHARGE_CATEG_ID  <>  t.CHARGE_CATEG_ID or
+s.TENANT_ORG_ID  <>  t.TENANT_ORG_ID or
+s.CHARGE_CATEG  <>  t.CHARGE_CATEG or
+s.CHARGE_CATEG_DESC  <>  t.CHARGE_CATEG_DESC 
+)
+
+
+
+
+
+--2 DIM_CUST_SQL
+drop table DIM_CUST_SQL_in1542
+CREATE TABLE DIM_CUST_SQL_IN1542(
+
+cust_key	int    identity(1,1) primary key            ,
+CUST_ID	int               NOT NULL     ,
+TENANT_ORG_ID	int       NOT NULL     ,
+CUST_TYPE_ID	int       NOT NULL     ,
+NICKNAME	varchar(50)   NOT NULL     ,
+SALUTE	varchar(50)       NOT NULL     ,
+MIDDLE_NM	varchar(50)   NOT NULL     ,
+CUST_TITLE	varchar(50)   NOT NULL     ,
+SUFFIX	varchar(50)       NOT NULL     ,
+WM_EMPLOYEE_ID	int       NOT NULL     ,
+CRE_DT	date              NOT NULL     ,
+CRE_USER	varchar(50)   NOT NULL     ,
+UPD_TS	datetime          NOT NULL     ,
+UPD_USER	varchar(50)   NOT NULL     ,
+START_DATE  DATE,
+END_DATE DATE,
+SIGNUP_TS	datetime      NOT NULL     ,
+REALM_ID	varchar(50)   NOT NULL     ,
+							   
+VALID_CUST_IND	varchar(50) NOT NULL    ,
+DELTD_YN	varchar(50)   NOT NULL)    ; 
+
+INSERT INTO DIM_CUST_SQL_in1542(CUST_ID,TENANT_ORG_ID,CUST_TYPE_ID,
+NICKNAME,SALUTE,MIDDLE_NM,CUST_TITLE,SUFFIX,WM_EMPLOYEE_ID,
+CRE_DT,CRE_USER,UPD_TS,UPD_USER,start_date,end_date,
+SIGNUP_TS,REALM_ID,	VALID_CUST_IND,DELTD_YN)
+
+SELECT 
+IIF(cust_id LIKE 'NULL' OR cust_id IS NULL ,101,(cast(ltrim(rtrim(cust_id)) as int))) AS CUST_ID,
+IIF(TENANT_ORG_ID LIKE 'NULL' OR TENANT_ORG_ID IS NULL,101,(cast(ltrim(rtrim(TENANT_ORG_ID)) as int))) AS TENANT_ORG_ID,
+IIF(CUST_TYPE_ID LIKE 'NULL' OR CUST_TYPE_ID IS NULL,101,(cast(ltrim(rtrim(CUST_TYPE_ID)) as int))) AS CUST_TYPE_ID,
+iif(nickname like'NULL' OR nickname IS NULL ,'N/A',nickname) NICKNAME,
+IIF(salute like'NULL' OR salute  IS NULL,'N/A',SUBSTRING(ltrim(rtrim(salute)),1,4) ),
+IIF(ltrim(rtrim(middle_nm)) LIKE 'NULL','N/A',middle_nm),
+iif(cust_title like 'null' OR CUST_TITLE IS NULL ,'N/A',(REPLACE(ltrim(rtrim(cust_title)),'#',' ')))cust_title,
+IIF(suffix LIKE 'NULL' OR suffix IS NULL ,'N/A',SUBSTRING(ltrim(rtrim(suffix)),2,1))suffix, 
+
+IIF(wm_employee_id LIKE 'NULL' OR wm_employee_id IS NULL ,101,(cast(ltrim(rtrim(wm_employee_id)) as int))) AS wm_employee_id,
+IIF(cre_dt LIKE 'NULL' OR cre_dt IS NULL ,'01-01-1990',(cast(ltrim(rtrim(cre_dt)) as DATE))) AS cre_dt,
+IIF(CRE_user LIKE 'NULL' OR CRE_user IS NULL ,'N/A',ltrim(rtrim(CRE_user)))CRE_user,
+FORMAT(IIF(upd_ts LIKE 'NULL' OR upd_ts IS NULL ,'01-01-1900',(cast(ltrim(rtrim(upd_ts)) as DATETIME))),'MM-dd-yyyy HH:mm:ss') AS upd_ts,
+IIF(UPD_USER LIKE 'NULL' OR UPD_USER IS NULL ,'N/A',ltrim(rtrim(UPD_USER))) AS UPD_USER, 
+GETDATE() AS START_DATE,NULL AS END_DATE,
+format(IIF(signup_ts LIKE 'NULL' OR signup_ts IS NULL ,'01-01-1900',(cast(ltrim(rtrim(signup_ts)) as DATETIME))),'MM-dd-yyyy HH:mm:ss') AS signup_ts,
+
+IIF(realm_id LIKE 'NULL' OR realm_id IS NULL ,'N/A',ltrim(rtrim(realm_id)))realm_id,
+IIF(valid_cust_ind LIKE 'NULL' OR valid_cust_ind IS NULL ,'N/A',ltrim(rtrim(valid_cust_ind)))valid_cust_ind,
+IIF(DELTD_YN LIKE 'NULL' OR DELTD_YN IS NULL ,'N/A',ltrim(rtrim(DELTD_YN)))DELTD_YN 
+FROM
+ [BCMPWMT].[CUST]
+
+ select * from DIM_CUST_SQL_in1542
+ select 
+ FORMAT(IIF(upd_ts LIKE 'NULL' OR upd_ts IS NULL ,'01-01-1900',(cast(ltrim(rtrim(upd_ts)) as DATETIME))),'MM-dd-yyyy HH:mm:ss') AS upd_ts from  [BCMPWMT].[CUST]
+ ltrim(rtrim(valid_cust_ind)) 
+ SELECT 
+ upd_ts,FORMAT(IIF(upd_ts LIKE 'NULL' OR upd_ts IS NULL ,'01-01-1900',(cast(ltrim(rtrim(upd_ts)) as DATETIME))),'MM-dd-yyyy HH:mm:ss') AS  upd_ts
+ FROM  [BCMPWMT].[CUST]
+
+
+
+
+
+
+
+ -------------testing----------------
+ -------row count-------------
+ select count(*) from DIM_CUST_SQL_in1542
+ select count(*) from(
+ SELECT 
+IIF(cust_id LIKE 'NULL' OR cust_id IS NULL ,101,(cast(ltrim(rtrim(cust_id)) as int))) AS CUST_ID,
+IIF(TENANT_ORG_ID LIKE 'NULL' OR TENANT_ORG_ID IS NULL,101,(cast(ltrim(rtrim(TENANT_ORG_ID)) as int))) AS TENANT_ORG_ID,
+IIF(CUST_TYPE_ID LIKE 'NULL' OR CUST_TYPE_ID IS NULL,101,(cast(ltrim(rtrim(CUST_TYPE_ID)) as int))) AS CUST_TYPE_ID,
+iif(nickname like'NULL' OR nickname IS NULL ,'N/A',nickname) NICKNAME,
+IIF(salute like'NULL' OR salute  IS NULL,'N/A',SUBSTRING(ltrim(rtrim(salute)),1,4) ),
+IIF(ltrim(rtrim(middle_nm)) LIKE 'NULL','N/A',middle_nm),
+iif(cust_title like 'null' OR CUST_TITLE IS NULL ,'N/A',(REPLACE(ltrim(rtrim(cust_title)),'#',' ')))cust_title,
+IIF(suffix LIKE 'NULL' OR suffix IS NULL ,'N/A',SUBSTRING(ltrim(rtrim(suffix)),2,1))suffix, 
+
+IIF(wm_employee_id LIKE 'NULL' OR wm_employee_id IS NULL ,101,(cast(ltrim(rtrim(wm_employee_id)) as int))) AS wm_employee_id,
+IIF(cre_dt LIKE 'NULL' OR cre_dt IS NULL ,'01-01-1990',(cast(ltrim(rtrim(cre_dt)) as DATE))) AS cre_dt,
+IIF(CRE_user LIKE 'NULL' OR CRE_user IS NULL ,'N/A',ltrim(rtrim(CRE_user)))CRE_user,
+FORMAT(IIF(upd_ts LIKE 'NULL' OR upd_ts IS NULL ,'01-01-1900',(cast(ltrim(rtrim(upd_ts)) as DATETIME))),'MM-dd-yyyy HH:mm:ss') AS upd_ts,
+IIF(UPD_USER LIKE 'NULL' OR UPD_USER IS NULL ,'N/A',ltrim(rtrim(UPD_USER))) AS UPD_USER, 
+GETDATE() AS START_DATE,NULL AS END_DATE,
+format(IIF(signup_ts LIKE 'NULL' OR signup_ts IS NULL ,'01-01-1900',(cast(ltrim(rtrim(signup_ts)) as DATETIME))),'MM-dd-yyyy HH:mm:ss') AS signup_ts,
+
+IIF(realm_id LIKE 'NULL' OR realm_id IS NULL ,'N/A',ltrim(rtrim(realm_id)))as realm_id,
+IIF(valid_cust_ind LIKE 'NULL' OR valid_cust_ind IS NULL ,'N/A',ltrim(rtrim(valid_cust_ind))) as valid_cust_ind,
+IIF(DELTD_YN LIKE 'NULL' OR DELTD_YN IS NULL ,'N/A',ltrim(rtrim(DELTD_YN))) as DELTD_YN 
+FROM
+ [BCMPWMT].[CUST]) 
+
+
+
+ ----------row_count_groupby---------------
+  select cust_id,count(*) from DIM_CUST_SQL_in1542 group by cust_id
+
+
+ --------------------3---------------------------------------
+CREATE TABLE dim_CUST_ACCT_SQL_IN1542
+(
+cust_acct_key  int identity(1,1) primary key	NOT NULL	,	
+ACCT_ID  bigint  NOT NULL			,
+CUST_ID  int  NOT NULL			    ,
+TENANT_ORG_ID  int  NOT NULL		,
+ACCT_STS_ID  int  NOT NULL			,
+ACCT_TYPE_ID  int  NOT NULL			,
+EMAIL  varchar(250)  NOT NULL		,
+VALID_CUST_IND  INT  NOT NULL		,
+CRE_DT  date  NOT NULL			    ,
+CRE_USER  varchar(250)  NOT NULL	,	
+UPD_TS  datetime  NOT NULL			,
+UPD_USER  varchar(250)  NOT NULL	,	
+Start_Date  datetime  NOT NULL		,
+End_Date  datetime NULL		,
+DELTD_YN  char(1)  NOT NULL			
+)
+
+
+INSERT INTO dim_CUST_ACCT_SQL_IN1542
+
+
+select 
+IIF(ACCT_ID    IS NULL OR   ACCT_ID is null,101, cast(ltrim(rtrim(acct_id))as bigint)) as ACCT_ID                          ,
+IIF(CUST_ID    IS NULL OR   CUST_ID is null,101,cast(ltrim(rtrim(cust_id))as int))as CUST_ID								 ,
+IIF(TENANT_ORG_ID    IS NULL OR   TENANT_ORG_ID is null,101,cast(ltrim(rtrim(tenant_org_id))as int))as TENANT_ORG_ID		 ,
+IIF(ACCT_STS_ID    IS NULL OR   ACCT_STS_ID is null,101,cast(ltrim(rtrim(acct_sts_id))as int))as ACCT_STS_ID				 ,
+IIF(ACCT_TYPE_ID    IS NULL OR   ACCT_TYPE_ID is null,101,cast(ltrim(rtrim(acct_type_id))as int))as ACCT_TYPE_ID			 ,
+IIF(EMAIL    IS NULL OR   EMAIL is null,'N/A', ltrim(rtrim(email)) )as EMAIL				 ,
+IIF(VALID_CUST_IND    IS NULL OR   VALID_CUST_IND is null,101,cast(ltrim(rtrim(valid_cust_ind))as int))as VALID_CUST_IND	 ,
+																	
+IIF(CRE_DT    IS NULL OR   CRE_DT is null,'01-01-1900',cast(ltrim(rtrim(cre_dt))as date))as CRE_DT						 ,
+IIF(CRE_USER    IS NULL OR   CRE_USER is null,'N/A',ltrim(rtrim(cre_user)))as CRE_USER									 ,
+IIF(UPD_TS    IS NULL OR   UPD_TS is null,'01-01-1900',cast(ltrim(rtrim(upd_ts))as datetime))as UPD_TS					 ,
+IIF(UPD_USER    IS NULL OR   UPD_USER is null,'N/A',ltrim(rtrim(upd_user)))as UPD_USER									 ,
+GETDATE() AS START_DATE,
+NULL AS END_DATE	,IIF(DELTD_YN    IS NULL OR   DELTD_YN is null,'N/A' ,cast(ltrim(rtrim(deltd_yn))as char(1))) as delt_dt
+																
+from 
+[BCMPWMT].[CUST_ACCT]
+----ROW_COUNT---------4975
+SELECT COUNT(*) FROM dim_CUST_ACCT_SQL_IN1542
+SELECT COUNT(*) FROM 
+(select 
+IIF(ACCT_ID    IS NULL OR   ACCT_ID is null,101, cast(ltrim(rtrim(acct_id))as bigint)) as ACCT_ID                          ,
+IIF(CUST_ID    IS NULL OR   CUST_ID is null,101,cast(ltrim(rtrim(cust_id))as int))as CUST_ID								 ,
+IIF(TENANT_ORG_ID    IS NULL OR   TENANT_ORG_ID is null,101,cast(ltrim(rtrim(tenant_org_id))as int))as TENANT_ORG_ID		 ,
+IIF(ACCT_STS_ID    IS NULL OR   ACCT_STS_ID is null,101,cast(ltrim(rtrim(acct_sts_id))as int))as ACCT_STS_ID				 ,
+IIF(ACCT_TYPE_ID    IS NULL OR   ACCT_TYPE_ID is null,101,cast(ltrim(rtrim(acct_type_id))as int))as ACCT_TYPE_ID			 ,
+IIF(EMAIL    IS NULL OR   EMAIL is null,'N/A',IIF( ltrim(rtrim(email)) LIKE '%@%',ltrim(rtrim(email)),'N/A' )) as EMAIL				 ,
+IIF(VALID_CUST_IND    IS NULL OR   VALID_CUST_IND is null,101,cast(ltrim(rtrim(valid_cust_ind))as int))as VALID_CUST_IND	 ,
+																	
+IIF(CRE_DT    IS NULL OR   CRE_DT is null,'01-01-1900',cast(ltrim(rtrim(cre_dt))as date))as CRE_DT						 ,
+IIF(CRE_USER    IS NULL OR   CRE_USER is null,'N/A',ltrim(rtrim(cre_user)))as CRE_USER									 ,
+IIF(UPD_TS    IS NULL OR   UPD_TS is null,'01-01-1900',cast(ltrim(rtrim(upd_ts))as datetime))as UPD_TS					 ,
+IIF(UPD_USER    IS NULL OR   UPD_USER is null,'N/A',ltrim(rtrim(upd_user)))as UPD_USER									 ,
+GETDATE() AS START_DATE,
+NULL AS END_DATE	
+,IIF(DELTD_YN    IS NULL OR   DELTD_YN is null,'N/A' ,cast(ltrim(rtrim(deltd_yn))as char(1))) as delt_dt
+																
+from 
+[BCMPWMT].[CUST_ACCT])HJ
+----------ROW_COUNT_GROUPBY----------
+
+SELECT CUST_ID,COUNT(*) FROM dim_CUST_ACCT_SQL_IN1542 GROUP BY CUST_ID
+SELECT CUST_ID,COUNT(*) FROM  
+(select 
+IIF(ACCT_ID    IS NULL OR   ACCT_ID is null,101, cast(ltrim(rtrim(acct_id))as bigint)) as ACCT_ID                          ,
+IIF(CUST_ID    IS NULL OR   CUST_ID is null,101,cast(ltrim(rtrim(cust_id))as int))as CUST_ID								 ,
+IIF(TENANT_ORG_ID    IS NULL OR   TENANT_ORG_ID is null,101,cast(ltrim(rtrim(tenant_org_id))as int))as TENANT_ORG_ID		 ,
+IIF(ACCT_STS_ID    IS NULL OR   ACCT_STS_ID is null,101,cast(ltrim(rtrim(acct_sts_id))as int))as ACCT_STS_ID				 ,
+IIF(ACCT_TYPE_ID    IS NULL OR   ACCT_TYPE_ID is null,101,cast(ltrim(rtrim(acct_type_id))as int))as ACCT_TYPE_ID			 ,
+IIF(EMAIL    IS NULL OR   EMAIL is null,'N/A', ltrim(rtrim(email)) )as EMAIL				 ,
+IIF(VALID_CUST_IND    IS NULL OR   VALID_CUST_IND is null,101,cast(ltrim(rtrim(valid_cust_ind))as int))as VALID_CUST_IND	 ,
+																	
+IIF(CRE_DT    IS NULL OR   CRE_DT is null,'01-01-1900',cast(ltrim(rtrim(cre_dt))as date))as CRE_DT						 ,
+IIF(CRE_USER    IS NULL OR   CRE_USER is null,'N/A',ltrim(rtrim(cre_user)))as CRE_USER									 ,
+IIF(UPD_TS    IS NULL OR   UPD_TS is null,'01-01-1900',cast(ltrim(rtrim(upd_ts))as datetime))as UPD_TS					 ,
+IIF(UPD_USER    IS NULL OR   UPD_USER is null,'N/A',ltrim(rtrim(upd_user)))as UPD_USER									 ,
+GETDATE() AS START_DATE,
+NULL AS END_DATE	
+,IIF(DELTD_YN    IS NULL OR   DELTD_YN is null,'N/A' ,cast(ltrim(rtrim(deltd_yn))as char(1))) as delt_dt
+																
+from 
+[BCMPWMT].[CUST_ACCT])HJ
+GROUP BY CUST_ID
+---------------RANDOM_CHECK------------
+SELECT * FROM dim_CUST_ACCT_SQL_IN1542 WHERE CUST_ID=68832271
+SELECT * FROM 
+(select 
+IIF(ACCT_ID    IS NULL OR   ACCT_ID is null,101, cast(ltrim(rtrim(acct_id))as bigint)) as ACCT_ID                          ,
+IIF(CUST_ID    IS NULL OR   CUST_ID is null,101,cast(ltrim(rtrim(cust_id))as int))as CUST_ID								 ,
+IIF(TENANT_ORG_ID    IS NULL OR   TENANT_ORG_ID is null,101,cast(ltrim(rtrim(tenant_org_id))as int))as TENANT_ORG_ID		 ,
+IIF(ACCT_STS_ID    IS NULL OR   ACCT_STS_ID is null,101,cast(ltrim(rtrim(acct_sts_id))as int))as ACCT_STS_ID				 ,
+IIF(ACCT_TYPE_ID    IS NULL OR   ACCT_TYPE_ID is null,101,cast(ltrim(rtrim(acct_type_id))as int))as ACCT_TYPE_ID			 ,
+IIF(EMAIL    IS NULL OR   EMAIL is null,'N/A', ltrim(rtrim(email)) )as EMAIL				 ,
+IIF(VALID_CUST_IND    IS NULL OR   VALID_CUST_IND is null,101,cast(ltrim(rtrim(valid_cust_ind))as int))as VALID_CUST_IND	 ,
+																	
+IIF(CRE_DT    IS NULL OR   CRE_DT is null,'01-01-1900',cast(ltrim(rtrim(cre_dt))as date))as CRE_DT						 ,
+IIF(CRE_USER    IS NULL OR   CRE_USER is null,'N/A',ltrim(rtrim(cre_user)))as CRE_USER									 ,
+IIF(UPD_TS    IS NULL OR   UPD_TS is null,'01-01-1900',cast(ltrim(rtrim(upd_ts))as datetime))as UPD_TS					 ,
+IIF(UPD_USER    IS NULL OR   UPD_USER is null,'N/A',ltrim(rtrim(upd_user)))as UPD_USER									 ,
+GETDATE() AS START_DATE,
+NULL AS END_DATE	
+,IIF(DELTD_YN    IS NULL OR   DELTD_YN is null,'N/A' ,cast(ltrim(rtrim(deltd_yn))as char(1))) as delt_dt
+																
+from 
+[BCMPWMT].[CUST_ACCT])HJ
+
+WHERE CUST_ID=68832271
+
+
+
+--------DISTINCT CHECK -------------
+
+SELECT ACCT_ID ,COUNT(*) 
+FROM dim_CUST_ACCT_SQL_IN1542 
+GROUP BY ACCT_ID 
+HAVING COUNT(*)>1
+-------------------COLUMN LEVEL CHECK--------------
+
+
+SELECT * FROM 
+dim_CUST_ACCT_SQL_IN1542 T LEFT JOIN 
+(select 
+IIF(ACCT_ID    IS NULL OR   ACCT_ID is null,101, cast(ltrim(rtrim(acct_id))as bigint)) as ACCT_ID                          ,
+IIF(CUST_ID    IS NULL OR   CUST_ID is null,101,cast(ltrim(rtrim(cust_id))as int))as CUST_ID								 ,
+IIF(TENANT_ORG_ID    IS NULL OR   TENANT_ORG_ID is null,101,cast(ltrim(rtrim(tenant_org_id))as int))as TENANT_ORG_ID		 ,
+IIF(ACCT_STS_ID    IS NULL OR   ACCT_STS_ID is null,101,cast(ltrim(rtrim(acct_sts_id))as int))as ACCT_STS_ID				 ,
+IIF(ACCT_TYPE_ID    IS NULL OR   ACCT_TYPE_ID is null,101,cast(ltrim(rtrim(acct_type_id))as int))as ACCT_TYPE_ID			 ,
+IIF(EMAIL    IS NULL OR   EMAIL is null,'N/A', ltrim(rtrim(email)) )as EMAIL				 ,
+IIF(VALID_CUST_IND    IS NULL OR   VALID_CUST_IND is null,101,cast(ltrim(rtrim(valid_cust_ind))as int))as VALID_CUST_IND	 ,
+																	
+IIF(CRE_DT    IS NULL OR   CRE_DT is null,'01-01-1900',cast(ltrim(rtrim(cre_dt))as date))as CRE_DT						 ,
+IIF(CRE_USER    IS NULL OR   CRE_USER is null,'N/A',ltrim(rtrim(cre_user)))as CRE_USER									 ,
+IIF(UPD_TS    IS NULL OR   UPD_TS is null,'01-01-1900',cast(ltrim(rtrim(upd_ts))as datetime))as UPD_TS					 ,
+IIF(UPD_USER    IS NULL OR   UPD_USER is null,'N/A',ltrim(rtrim(upd_user)))as UPD_USER									 ,
+GETDATE() AS START_DATE,
+NULL AS END_DATE	
+,IIF(DELTD_YN    IS NULL OR   DELTD_YN is null,'N/A' ,cast(ltrim(rtrim(deltd_yn))as char(1))) as delt_dt
+																
+from 
+[BCMPWMT].[CUST_ACCT])S
+ON T.ACCT_ID=S.ACCT_ID
+WHERE T.ACCT_ID IS NOT NULL AND(
+s.ACCT_ID  <>  t.ACCT_ID or
+s.CUST_ID  <>  t.CUST_ID or
+s.TENANT_ORG_ID  <>  t.TENANT_ORG_ID or
+s.ACCT_STS_ID  <>  t.ACCT_STS_ID or
+s.ACCT_TYPE_ID  <>  t.ACCT_TYPE_ID or
+s.EMAIL  <>  t.EMAIL or
+s.VALID_CUST_IND  <>  t.VALID_CUST_IND or
+
+s.CRE_DT  <>  t.CRE_DT or
+s.CRE_USER  <>  t.CRE_USER or
+s.UPD_TS  <>  t.UPD_TS or
+s.UPD_USER  <>  t.UPD_USER 
+)
+
+
+-----------------------4--------------------------------------------
+
+/****** Object:  Table [BCMPWMT].[CUST_ADDR]    Script Date: 05-09-2022 19:28:54 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [BCMPWMT].[CUST_ADDR](
+	[F1] [float] NULL,
+	[ADDR_ID] [float] NULL,
+	[TENANT_ORG_ID] [float] NULL,
+	[SRC_ADDR_ID] [float] NULL,
+	[DATA_SRC_ID] [float] NULL,
+	[VALID_TS] [nvarchar](255) NULL,
+	[VALID_STS] [nvarchar](255) NULL,
+	[CITY] [nvarchar](255) NULL,
+	[MUNICIPALITY] [nvarchar](255) NULL,
+	[TOWN] [nvarchar](255) NULL,
+	[VILLAGE] [nvarchar](255) NULL,
+	[COUNTY] [nvarchar](255) NULL,
+	[DISTRICT] [nvarchar](255) NULL,
+	[ZIP_CD] [float] NULL,
+	[POSTAL_CD] [nvarchar](255) NULL,
+	[ZIP_EXTN] [nvarchar](255) NULL,
+	[ADDR_TYPE] [nvarchar](255) NULL,
+	[AREA] [nvarchar](255) NULL,
+	[CNTRY_CD] [nvarchar](255) NULL,
+	[STATE_PRVNCE_TYPE] [nvarchar](255) NULL,
+	[OWNER_ID] [nvarchar](255) NULL,
+	[PARENT_ID] [nvarchar](255) NULL,
+	[DELTD_YN] [nvarchar](255) NULL,
+	[SRC_CRE_TS] [nvarchar](255) NULL,
+	[SRC_MODFD_TS] [nvarchar](255) NULL,
+	[CRE_DT] [datetime] NULL,
+	[CRE_USER] [nvarchar](255) NULL,
+	[UPD_TS] [nvarchar](255) NULL,
+	[UPD_USER] [nvarchar](255) NULL
+) ON [PRIMARY]
+GO
+
+
+create table dim_cust_address_SQL_IN1542
+(
+cust_addr_key  int identity(1,1) primary key	NOT NULL			    ,	
+ADDR_ID  float NOT NULL				    ,
+TENANT_ORG_ID  int  NOT NULL				,
+DATA_SRC_ID  int  NOT NULL				    ,
+VALID_TS  datetime  NOT NULL				,
+VALID_STS  varchar  NOT NULL				,
+CITY  nvarchar(255)  NOT NULL				,
+MUNICIPALITY  nvarchar(255)  NOT NULL		,
+TOWN  nvarchar(255)  NOT NULL				,
+VILLAGE  nvarchar(255)  NOT NULL			,
+COUNTY  nvarchar(255)  NOT NULL				,
+DISTRICT  nvarchar(255)  NOT NULL			,
+ZIP_CD  int  NOT NULL				        ,
+POSTAL_CD  int  NOT NULL				    ,
+ZIP_EXTN  int  NOT NULL				        ,
+ADDR_TYPE  nvarchar(255)  NOT NULL			,
+AREA  nvarchar(255)  NOT NULL				,
+CNTRY_CD  nvarchar(255)  NOT NULL			,
+STATE_PRVNCE_TYPE  nvarchar(255)  NOT NULL	,
+OWNER_ID  int  NOT NULL				        ,
+PARENT_ID  int  NOT NULL				    ,
+DELTD_YN  char(1)  NOT NULL				    ,
+Start_Date  datetime  NOT NULL				,
+End_Date  datetime   NULL				,
+CRE_DT  date  NOT NULL				        ,
+CRE_USER  nvarchar(255)  NOT NULL			,
+UPD_TS  datetime  NOT NULL				    ,
+UPD_USER  nvarchar(255)  NOT NULL	)
+
+
+SELECT 
+*
+from
+dim_cust_address_SQL_IN1542 
+
+INSERT INTO dim_cust_address_SQL_IN1542 
+SELECT 
+IIF(Addr_ID is null,101.00, cast(ltrim(rtrim(addr_id))as float))as Addr_ID,
+
+                                      
+IIF(TENANT_ORG_ID    IS NULL,101,cast(ltrim(rtrim(tenant_org_id))as int))as TENANT_ORG_ID		,
+IIF(DATA_SRC_ID    IS NULL,101,cast(ltrim(rtrim(data_src_id))as int))as DATA_SRC_ID				,
+																	
+IIF(VALID_TS  is null,'01-01-1900',cast(ltrim(rtrim(valid_ts))as datetime))as VALID_TS			,
+IIF(VALID_STS  is null, 'N/A',ltrim(rtrim(valid_sts)))as VALID_STS									,
+IIF(CITY    IS NULL ,'N/A',ltrim(rtrim(city)))as CITY													,
+IIF(MUNICIPALITY   is null,'N/A',ltrim(rtrim(municipality)))as MUNICIPALITY					,
+IIF(TOWN  is null,'N/A',ltrim(rtrim(town)))as TOWN													,
+IIF(VILLAGE is null,'N/A',ltrim(rtrim(village)))as VILLAGE										,
+IIF(COUNTY is null ,'N/A',ltrim(rtrim(county)))as COUNTY											,
+IIF(DISTRICT LIKE 'null','N/A',ltrim(rtrim(distRict)))as DISTRICT									,
+IIF(ZIP_CD    IS NULL OR   ZIP_CD is null,101,cast(ltrim(rtrim(zip_cd))as int))as ZIP_CD									,
+IIF(POSTAL_CD    is null,101,cast(ltrim(rtrim(postal_cd))as int))as POSTAL_CD						,
+IIF(ZIP_EXTN    IS NULL OR   ZIP_EXTN is null,101,cast(ltrim(rtrim(zip_extn))as int))as ZIP_EXTN							,
+IIF(ADDR_TYPE   is null,'N/A',ltrim(rtrim(addr_type)))as ADDR_TYPE								,
+IIF(AREA    is null,'N/A',ltrim(rtrim(area)))as AREA													,
+IIF(CNTRY_CD  LIKE 'null','N/A',ltrim(rtrim(cntry_cd)))as CNTRY_CD									,
+IIF(STATE_PRVNCE_TYPE LIKE 'null','N/A',ltrim(rtrim(state_prvnCe_type)))as STATE_PRVNCE_TYPE,
+IIF(OWNER_ID  is null,101,cast(ltrim(rtrim(owner_id))as int))as OWNER_ID							,
+IIF(PARENT_ID    is null,'N/A',cast(ltrim(rtrim(parent_id))as int))as PARENT_ID						,
+IIF(DELTD_YN    IS NULL OR   DELTD_YN is null,'N/A' ,cast(ltrim(rtrim(deltd_yn))as char))as DELTD_YN							,
+GETDATE() AS START_DATE,
+NULL AS END_DATE													,
+IIF(CRE_DT    IS NULL OR   CRE_DT is null,'01-01-1900',cast(ltrim(rtrim(cre_dt))as date))as CRE_DT						,
+IIF(CRE_USER    IS NULL OR   CRE_USER is null,'N/A',ltrim(rtrim(cre_user)))as CRE_USER									,
+IIF(UPD_TS is null,'01-01-1900',cast(ltrim(rtrim(upd_ts))as datetime))as UPD_TS					,
+IIF(UPD_USER is null,'N/A',ltrim(rtrim(upd_user)))as UPD_USER									
+
+FROM
+[BCMPWMT].[CUST_ADDR]
+=IF(E16="int",101,IF(E16="varchar(250)","'N/A'",IF(E16="date","'01-01-19000'",IF(E16="datetime","'01-01-1900'",IF(E16="char","'N/A'",IF(E16="float",101,IF(E16="varchar","'N/A'",IF(E16="bigint",101,IF(E16="integer",101,"")))))))))
+
+SELECT * FROM dim_CUST_ACCT_SQL_IN1542
+
+SELECT * FROM 
+[BCMPWMT].[CUST_ADDR]
+--------------------------------------5--------------------------------------------------------
+CREATE TABLE dim_cust_addr_zone_SQL_IN1542(
+
+addr_zone_id_key  int identity(1,1) primary key	NOT NULL	,
+ADDR_ZONE_ID  int  NOT NULL			,
+TENANT_ORG_ID  int  NOT NULL		,
+DATA_SRC_ID  int  NOT NULL			,
+CITY  varchar(50)  NOT NULL			,
+POSTAL_CD  varchar(50)  NOT NULL	,
+STATE  varchar(50)  NOT NULL		,
+DELTD_YN  varchar(50)  NOT NULL		,
+CRE_USER  varchar(50)  NOT NULL		,
+CRE_DT  date  NOT NULL			    ,
+UPD_USER  varchar(50)  NOT NULL		,
+UPD_TS  datetime  NOT NULL		)
+INSERT INTO dim_cust_addr_zone_SQL_IN1542
+SELECT
+IIF(ADDR_ZONE_ID    IS NULL OR   ADDR_ZONE_ID is null,101,cast(ltrim(rtrim(addr_zone_id))as int))as ADDR_ZONE_ID          ,
+IIF(TENANT_ORG_ID    IS NULL OR   TENANT_ORG_ID is null,101,cast(ltrim(rtrim(tenant_org_id))as int))as TENANT_ORG_ID		 ,
+IIF(DATA_SRC_ID    IS NULL OR   DATA_SRC_ID is null,101,cast(ltrim(rtrim(data_src_id))as int))as DATA_SRC_ID				 ,
+IIF(CITY    IS NULL OR   CITY is null,'N/A',ltrim(rtrim(city)))as CITY													 ,
+IIF(POSTAL_CD    IS NULL OR   POSTAL_CD is null,'N/A',ltrim(rtrim(postal_cd)))as POSTAL_CD								 ,
+IIF(STATE    IS NULL OR   STATE is null,'N/A',ltrim(rtrim(state)))as STATE												 ,
+																				 
+IIF(DELTD_YN    IS NULL OR   DELTD_YN is null,'N/A',cast(ltrim(rtrim(deltd_yn))as varchar))as DELTD_YN					 ,
+IIF(CRE_USER    IS NULL OR   CRE_USER is null,'N/A',ltrim(rtrim(cre_user)))as CRE_USER									 ,
+IIF(CRE_DT    IS NULL OR   CRE_DT is null,'01-01-1900',cast(ltrim(rtrim(cre_dt))as date))as CRE_DT						 ,
+IIF(UPD_USER    IS NULL OR   UPD_USER is null,'N/A',ltrim(rtrim(upd_user)))as UPD_USER									 ,
+IIF(UPD_TS    IS NULL OR   UPD_TS is null,'01-01-1900',cast(ltrim(rtrim(upd_ts))as datetime))as UPD_TS					 
+FROM [BCMPWMT].[CUST_ADDR_ZONE]
+
+
+------ROW_CHECK---------------30293
+SELECT COUNT(*) FROM dim_cust_addr_zone_SQL_IN1542
+
+	SELECT COUNT(*) FROM 
+	(SELECT
+IIF(ADDR_ZONE_ID    IS NULL OR   ADDR_ZONE_ID is null,101,cast(ltrim(rtrim(addr_zone_id))as int))as ADDR_ZONE_ID          ,
+IIF(TENANT_ORG_ID    IS NULL OR   TENANT_ORG_ID is null,101,cast(ltrim(rtrim(tenant_org_id))as int))as TENANT_ORG_ID		 ,
+IIF(DATA_SRC_ID    IS NULL OR   DATA_SRC_ID is null,101,cast(ltrim(rtrim(data_src_id))as int))as DATA_SRC_ID				 ,
+IIF(CITY    IS NULL OR   CITY is null,'N/A',ltrim(rtrim(city)))as CITY													 ,
+IIF(POSTAL_CD    IS NULL OR   POSTAL_CD is null,'N/A',ltrim(rtrim(postal_cd)))as POSTAL_CD								 ,
+IIF(STATE    IS NULL OR   STATE is null,'N/A',ltrim(rtrim(state)))as STATE												 ,
+																				 
+IIF(DELTD_YN    IS NULL OR   DELTD_YN is null,'N/A',cast(ltrim(rtrim(deltd_yn))as varchar))as DELTD_YN					 ,
+IIF(CRE_USER    IS NULL OR   CRE_USER is null,'N/A',ltrim(rtrim(cre_user)))as CRE_USER									 ,
+IIF(CRE_DT    IS NULL OR   CRE_DT is null,'01-01-1900',cast(ltrim(rtrim(cre_dt))as date))as CRE_DT						 ,
+IIF(UPD_USER    IS NULL OR   UPD_USER is null,'N/A',ltrim(rtrim(upd_user)))as UPD_USER									 ,
+IIF(UPD_TS    IS NULL OR   UPD_TS is null,'01-01-1900',cast(ltrim(rtrim(upd_ts))as datetime))as UPD_TS					 
+FROM [BCMPWMT].[CUST_ADDR_ZONE])S
+		-----ROW_COUNT_GROUP_BY--------
+		
+SELECT TENANT_ORG_ID,COUNT(*) FROM dim_cust_addr_zone_SQL_IN1542 GROUP BY TENANT_ORG_ID
+
+	SELECT TENANT_ORG_ID ,COUNT(*) FROM 
+	(SELECT
+IIF(ADDR_ZONE_ID    IS NULL OR   ADDR_ZONE_ID is null,101,cast(ltrim(rtrim(addr_zone_id))as int))as ADDR_ZONE_ID          ,
+IIF(TENANT_ORG_ID    IS NULL OR   TENANT_ORG_ID is null,101,cast(ltrim(rtrim(tenant_org_id))as int))as TENANT_ORG_ID		 ,
+IIF(DATA_SRC_ID    IS NULL OR   DATA_SRC_ID is null,101,cast(ltrim(rtrim(data_src_id))as int))as DATA_SRC_ID				 ,
+IIF(CITY    IS NULL OR   CITY is null,'N/A',ltrim(rtrim(city)))as CITY													 ,
+IIF(POSTAL_CD    IS NULL OR   POSTAL_CD is null,'N/A',ltrim(rtrim(postal_cd)))as POSTAL_CD								 ,
+IIF(STATE    IS NULL OR   STATE is null,'N/A',ltrim(rtrim(state)))as STATE												 ,
+																				 
+IIF(DELTD_YN    IS NULL OR   DELTD_YN is null,'N/A',cast(ltrim(rtrim(deltd_yn))as varchar))as DELTD_YN					 ,
+IIF(CRE_USER    IS NULL OR   CRE_USER is null,'N/A',ltrim(rtrim(cre_user)))as CRE_USER									 ,
+IIF(CRE_DT    IS NULL OR   CRE_DT is null,'01-01-1900',cast(ltrim(rtrim(cre_dt))as date))as CRE_DT						 ,
+IIF(UPD_USER    IS NULL OR   UPD_USER is null,'N/A',ltrim(rtrim(upd_user)))as UPD_USER									 ,
+IIF(UPD_TS    IS NULL OR   UPD_TS is null,'01-01-1900',cast(ltrim(rtrim(upd_ts))as datetime))as UPD_TS					 
+FROM [BCMPWMT].[CUST_ADDR_ZONE])S
+GROUP BY TENANT_ORG_ID
+
+SELECT * FROM [BCMPWMT].[CUST_ADDR_ZONE]
+-----------------RANDOM_CHECK_---------------------
+
+SELECT * FROM dim_cust_addr_zone_SQL_IN1542 WHERE CITY='HOWELL'
+
+	SELECT * FROM 
+	(SELECT
+IIF(ADDR_ZONE_ID    IS NULL OR   ADDR_ZONE_ID is null,101,cast(ltrim(rtrim(addr_zone_id))as int))as ADDR_ZONE_ID          ,
+IIF(TENANT_ORG_ID    IS NULL OR   TENANT_ORG_ID is null,101,cast(ltrim(rtrim(tenant_org_id))as int))as TENANT_ORG_ID		 ,
+IIF(DATA_SRC_ID    IS NULL OR   DATA_SRC_ID is null,101,cast(ltrim(rtrim(data_src_id))as int))as DATA_SRC_ID				 ,
+IIF(CITY    IS NULL OR   CITY is null,'N/A',ltrim(rtrim(city)))as CITY													 ,
+IIF(POSTAL_CD    IS NULL OR   POSTAL_CD is null,'N/A',ltrim(rtrim(postal_cd)))as POSTAL_CD								 ,
+IIF(STATE    IS NULL OR   STATE is null,'N/A',ltrim(rtrim(state)))as STATE												 ,
+																				 
+IIF(DELTD_YN    IS NULL OR   DELTD_YN is null,'N/A',cast(ltrim(rtrim(deltd_yn))as varchar))as DELTD_YN					 ,
+IIF(CRE_USER    IS NULL OR   CRE_USER is null,'N/A',ltrim(rtrim(cre_user)))as CRE_USER									 ,
+IIF(CRE_DT    IS NULL OR   CRE_DT is null,'01-01-1900',cast(ltrim(rtrim(cre_dt))as date))as CRE_DT						 ,
+IIF(UPD_USER    IS NULL OR   UPD_USER is null,'N/A',ltrim(rtrim(upd_user)))as UPD_USER									 ,
+IIF(UPD_TS    IS NULL OR   UPD_TS is null,'01-01-1900',cast(ltrim(rtrim(upd_ts))as datetime))as UPD_TS					 
+FROM [BCMPWMT].[CUST_ADDR_ZONE])S
+WHERE CITY='HOWELL'
+-----------DUPLICATE_CHECK_-------
+SELECT ADDR_ZONE_ID ,COUNT(*) FROM dim_cust_addr_zone_SQL_IN1542 GROUP BY ADDR_ZONE_ID  HAVING COUNT(*)>1
+-------------COLUMN LEVEL CHECK----------------------
+SELECT * FROM dim_cust_addr_zone_SQL_IN1542 T
+LEFT JOIN
+
+	(SELECT
+IIF(ADDR_ZONE_ID    IS NULL OR   ADDR_ZONE_ID is null,101,cast(ltrim(rtrim(addr_zone_id))as int))as ADDR_ZONE_ID          ,
+IIF(TENANT_ORG_ID    IS NULL OR   TENANT_ORG_ID is null,101,cast(ltrim(rtrim(tenant_org_id))as int))as TENANT_ORG_ID		 ,
+IIF(DATA_SRC_ID    IS NULL OR   DATA_SRC_ID is null,101,cast(ltrim(rtrim(data_src_id))as int))as DATA_SRC_ID				 ,
+IIF(CITY    IS NULL OR   CITY is null,'N/A',ltrim(rtrim(city)))as CITY													 ,
+IIF(POSTAL_CD    IS NULL OR   POSTAL_CD is null,'N/A',ltrim(rtrim(postal_cd)))as POSTAL_CD								 ,
+IIF(STATE    IS NULL OR   STATE is null,'N/A',ltrim(rtrim(state)))as STATE												 ,
+																				 
+IIF(DELTD_YN    IS NULL OR   DELTD_YN is null,'N/A',cast(ltrim(rtrim(deltd_yn))as varchar))as DELTD_YN					 ,
+IIF(CRE_USER    IS NULL OR   CRE_USER is null,'N/A',ltrim(rtrim(cre_user)))as CRE_USER									 ,
+IIF(CRE_DT    IS NULL OR   CRE_DT is null,'01-01-1900',cast(ltrim(rtrim(cre_dt))as date))as CRE_DT						 ,
+IIF(UPD_USER    IS NULL OR   UPD_USER is null,'N/A',ltrim(rtrim(upd_user)))as UPD_USER									 ,
+IIF(UPD_TS    IS NULL OR   UPD_TS is null,'01-01-1900',cast(ltrim(rtrim(upd_ts))as datetime))as UPD_TS					 
+FROM [BCMPWMT].[CUST_ADDR_ZONE] )s
+ON T.ADDR_ZONE_ID=S.ADDR_ZONE_ID
+WHERE S.ADDR_ZONE_ID is not null AND (
+s.ADDR_ZONE_ID  <>  t.ADDR_ZONE_ID or
+s.TENANT_ORG_ID  <>  t.TENANT_ORG_ID or
+s.DATA_SRC_ID  <>  t.DATA_SRC_ID or
+s.CITY  <>  t.CITY or
+s.POSTAL_CD  <>  t.POSTAL_CD or
+s.STATE  <>  t.STATE or
+
+s.DELTD_YN  <>  t.DELTD_YN or
+s.CRE_USER  <>  t.CRE_USER or
+s.CRE_DT  <>  t.CRE_DT or
+s.UPD_USER  <>  t.UPD_USER or
+s.UPD_TS  <>  t.UPD_TS )
+----------------------------------------------------------------------------
+------------------------------------------6----------------------------------------------------
+
